@@ -21,6 +21,13 @@ class Event(namedtuple('Event', 'location_id event_id value timestamp')):
     A single event that has been produced by a sensor.
     """
 
+class AveragedEvent():
+    def __init__(self, average_event):
+        self.location_id = average_event[0]
+        self.event_id = average_event[1]
+        self.value = average_event[2]
+        self.timestamp = average_event[3]
+
 
 class QueueSubscription:
     """

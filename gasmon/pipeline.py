@@ -7,6 +7,17 @@ from collections import deque, namedtuple
 import logging
 from time import time
 
+class AveragedEvent():
+    def __init__(self, average_event):
+        self.location_id = average_event[0]
+        self.event_id = average_event[1]
+        self.value = average_event[2]
+        self.timestamp = average_event[3]
+
+    def __str__(self):
+        return f"location_id={self.location_id}, event_id={self.event_id}, value={self.value}, timestamp={self.timestamp}"
+
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -69,13 +80,57 @@ class FixedDurationSource(Pipeline):
         # Calculate the time at which we should stop processing
         end_time = time() + self.run_time_seconds
         logger.info(f'Processing events for {self.run_time_seconds} seconds')
+        start_time = time()
+
+        ids_set = set()
+        loc_set = set()
 
         # Process events for as long as we still have time remaining
+        i=0
+        recent_events = []
         for event in events:
             if time() < end_time:
-                logger.debug(f'Procesing event: {event}')
-                self.events_processed += 1
-                yield event
+                if event.event_id in ids_set:
+                    i=i+1
+                    continue
+                else:
+                    recent_events.append(event)
+                    ids_set.add(event.event_id)
+                    loc_set.add(event.location_id)
+                    if time() - start_time > 30:
+                        #ids_set = set()
+                        #loc_set = set()
+                        print("Run for longer than 30 seconds")
+                        print("Most recent event is:")
+                        print(event, event.event_id, event.location_id)
+                        for id in loc_set:
+                            print("Location ID is")
+                            print(id)
+                            values = []
+                            times = []
+                            for recent_event in recent_events:
+                                if id in recent_event:
+                                    print(recent_event)
+                                    values.append(float(recent_event.value))
+                                    times.append(int(recent_event.timestamp))
+                            values_average = float(sum(values)) / float(len(values))
+                            times_average = float(sum(times)) / float(len(times))
+                            times_average = int(round(times_average))
+                            loc_average_event = AveragedEvent(average_event=[id,event.event_id,values_average,times_average])
+                            print("Averaged location event is")
+                            print(loc_average_event)
+                            logger.debug(f'Procesing event: {loc_average_event}')
+                            i=i+1
+                            self.events_processed += 1
+                            yield loc_average_event
+
+                        start_time = time()
+                    logger.debug(f'Procesing event: {event}')
+                    self.events_processed += 1
+                    i=i+1
+                    yield event
             else:
                 logger.info('Finished processing events')
+                print(len(ids_set))
+                print(i)
                 return
