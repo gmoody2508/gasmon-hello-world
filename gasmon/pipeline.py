@@ -10,12 +10,11 @@ from time import time
 class AveragedEvent():
     def __init__(self, average_event):
         self.location_id = average_event[0]
-        self.event_id = average_event[1]
-        self.value = average_event[2]
-        self.timestamp = average_event[3]
+        self.value = average_event[1]
+        self.timestamp = average_event[2]
 
     def __str__(self):
-        return f"location_id={self.location_id}, event_id={self.event_id}, value={self.value}, timestamp={self.timestamp}"
+        return f"location_id={self.location_id}, value={self.value}, timestamp={self.timestamp}"
 
 
 logger = logging.getLogger(__name__)
@@ -98,11 +97,9 @@ class FixedDurationSource(Pipeline):
                     ids_set.add(event.event_id)
                     loc_set.add(event.location_id)
                     if time() - start_time > 30:
-                        #ids_set = set()
-                        #loc_set = set()
                         print("Run for longer than 30 seconds")
                         print("Most recent event is:")
-                        print(event, event.event_id, event.location_id)
+                        print(event, event.location_id)
                         for id in loc_set:
                             print("Location ID is")
                             print(id)
@@ -116,7 +113,7 @@ class FixedDurationSource(Pipeline):
                             values_average = float(sum(values)) / float(len(values))
                             times_average = float(sum(times)) / float(len(times))
                             times_average = int(round(times_average))
-                            loc_average_event = AveragedEvent(average_event=[id,event.event_id,values_average,times_average])
+                            loc_average_event = AveragedEvent(average_event=[id,values_average,times_average])
                             print("Averaged location event is")
                             print(loc_average_event)
                             logger.debug(f'Procesing event: {loc_average_event}')
