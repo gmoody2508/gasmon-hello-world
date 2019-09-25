@@ -118,13 +118,13 @@ class FixedDurationSource(Pipeline):
                             yield loc_average_event
 
                         start_time = time()
+                        self.events_processed += 1
 
 
                     else:
                         print("Processing unique event:")
                         logger.debug(f'Procesing event: {event}')
                         self.events_processed += 1
-                        i=i+1
             else:
                 logger.info('Finished processing events')
                 print("Number of unique events processed")
