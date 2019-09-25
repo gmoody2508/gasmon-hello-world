@@ -96,10 +96,9 @@ class FixedDurationSource(Pipeline):
                     recent_events.append(event)
                     ids_set.add(event.event_id)
                     loc_set.add(event.location_id)
+                    i=i+1
                     if time() - start_time > 30:
                         print("Run for longer than 30 seconds")
-                        print("Most recent event is:")
-                        print(event, event.location_id)
                         for id in loc_set:
                             print("Location ID is")
                             print(id)
@@ -115,19 +114,21 @@ class FixedDurationSource(Pipeline):
                             times_average = int(round(times_average))
                             loc_average_event = AveragedEvent(average_event=[id,values_average,times_average])
                             print("Averaged location event is")
-                            print(loc_average_event)
-                            logger.debug(f'Procesing event: {loc_average_event}')
-                            i=i+1
-                            self.events_processed += 1
+                            logger.debug(f'Processing average event: {loc_average_event}')
                             yield loc_average_event
 
                         start_time = time()
-                    logger.debug(f'Procesing event: {event}')
-                    self.events_processed += 1
-                    i=i+1
-                    yield event
+
+
+                    else:
+                        print("Processing unique event:")
+                        logger.debug(f'Procesing event: {event}')
+                        self.events_processed += 1
+                        i=i+1
             else:
                 logger.info('Finished processing events')
+                print("Number of unique events processed")
                 print(len(ids_set))
+                print("All events including duplicates")
                 print(i)
                 return
