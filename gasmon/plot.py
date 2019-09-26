@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
@@ -7,14 +8,21 @@ def plot(plot_data):
     #ax.scatter(x, y, z)
 
     fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    x, y = np.meshgrid(x, y)
 
-    surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
+    ax = Axes3D(fig)
+    surf = ax.plot_trisurf(x, y, z, cmap=cm.jet, linewidth=0.1)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.ylim((0, 1000))
+    plt.ylim((0, 1000))
 
     plt.show(block=False)
     plt.pause(5)
-    plt.close()
+    #plt.close()
+
+
 
 
