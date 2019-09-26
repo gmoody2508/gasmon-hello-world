@@ -38,7 +38,7 @@ def main():
 
     # Create the pipeline steps that events will pass through when being processed
     run_time_seconds = int(config['run_time_seconds'])
-    fixed_duration_source = FixedDurationSource(run_time_seconds)
+    fixed_duration_source = FixedDurationSource(run_time_seconds, locations)
     pipeline = fixed_duration_source
 
     # Create an SQS queue that will be subscribed to the SNS topic

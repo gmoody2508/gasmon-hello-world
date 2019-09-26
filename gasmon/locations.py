@@ -13,10 +13,17 @@ from gasmon.configuration import config
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class Location(namedtuple('Location', 'x y id')):
+class Location():
     """
-    A sensor location, consisting of x and y coordinates and a unique ID.
-    """
+        A sensor location, consisting of x and y coordinates and a unique ID.
+     """
+    def __init__(self, x, y, id):
+        self.x = x
+        self.y = y
+        self.id = id
+
+    def __str__(self):
+        return f"{self.id},{self.x},{self.y},"
 
 def get_locations(s3_bucket, locations_key):
     """
@@ -47,6 +54,6 @@ def _parse_locations_json(locations):
     """
     try:
         parsed_json = json.loads(locations)
-        return list(map(lambda loc: Location(x=loc['x'], y=loc['y'], id=loc['id']), parsed_json))
+        return list(map(lambda loc: Location(loc['x'],loc['y'],loc['id']), parsed_json))
     except Exception as e:
         raise Exception('Malformed locations file', e)
