@@ -7,7 +7,7 @@ from collections import deque, namedtuple
 import logging
 from time import time
 from gasmon.locations import Location
-from gasmon.plot import plot
+from gasmon.plot import *
 
 class AveragedEvent():
     def __init__(self, average_event):
@@ -99,12 +99,13 @@ class FixedDurationSource(Pipeline):
         loc_set = set()
 
         # Process events for as long as we still have time remaining
-        i=0
-        j=1
-        k=1
+        i = 0
+        j = 1
+        k = 1
         recent_events = []
         with open("averaged_readings.csv",'w') as out:
-            out.write("Location ID, x, y, Value, Timestamp, Block, Total runtime = "+str(duration)+", Block time = "+str(block_time)+" \n")
+            out.write("Location ID, x, y, Value, Timestamp, Block, Total runtime = "+str(duration)+", Block time = "\
+                      +str(block_time)+" \n")
         out.close()
 
         with open("averaged_sensors.csv",'w') as out:
@@ -114,7 +115,7 @@ class FixedDurationSource(Pipeline):
         for event in events:
             if time() < end_time:
                 if event.event_id in ids_set:
-                    i=i+1
+                    i = i + 1
                     continue
                 else:
                     recent_events.append(event)
@@ -159,7 +160,9 @@ class FixedDurationSource(Pipeline):
                         with open("averaged_sensors.csv", 'a') as out:
                             out.write(f'{all_sensors_average}' + str(k) + "\n")
                         out.close()
-                        plot(plot_data)
+                        estimates = self.GaussEstimates(plot_data)
+                        fit = Gaussian3D(10.0, 1000.0, 500.0, 1000.0, 1000.0)
+                        plot(plot_data, fit)
 
                         k=k+1
                         start_time = time()
@@ -178,3 +181,10 @@ class FixedDurationSource(Pipeline):
                 print("Total number of averaged events")
                 print(j)
                 return
+
+    def GaussEstimates(self, plot_data):
+        print("AVERAGED LOCATION VALUES USED TO OBTAIN INITIAL ESTIMATES")
+        print(plot_data)
+        i=0
+        z_values = [location[2] for location in plot_data]
+        index = z_values.index(max(z_values))

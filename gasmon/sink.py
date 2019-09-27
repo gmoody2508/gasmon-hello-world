@@ -25,4 +25,4 @@ class Printer(Sink):
 
     def handle(self, events):
         for event in events:
-            print(event)
+            pass

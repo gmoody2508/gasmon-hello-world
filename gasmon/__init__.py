@@ -34,7 +34,7 @@ def main():
     s3_bucket = config['locations']['s3_bucket']
     locations_key = config['locations']['s3_key']
     locations = get_locations(s3_bucket, locations_key)
-    print(f'\n{locations}\n')
+    #print(f'\n{locations}\n')
 
     # Create the pipeline steps that events will pass through when being processed
     run_time_seconds = int(config['run_time_seconds'])
